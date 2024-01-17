@@ -1,18 +1,23 @@
-from config import persistDirectory_child, persistDirectory_parent
 from langchain.embeddings import OpenAIEmbeddings
-from data.confluence_data import get_all_spaces_docs
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import ParentDocumentRetriever
 from langchain.storage import LocalFileStore
 from langchain.storage._lc_store import create_kv_docstore
-from data.azure_data import prepare_azure_docs
 from llm.preprocessor import remove_duplicates_docs
 import streamlit as st
 import time
+import os
+# import sys
+# sys.path.append('data')
+from data.confluence_data import get_all_spaces_docs
+from data.azure_data import prepare_azure_docs
 
 
 def job_scheduler_refresh_database():
+    persistDirectory_parent = os.getenv('persistDirectory_parent')
+    persistDirectory_child = os.getenv('persistDirectory_child')
+
     with st.spinner(text="Refreshing Database...") as s:
         embedding_function = OpenAIEmbeddings()
         # Delete all parent documents from docstore

@@ -1,4 +1,3 @@
-from config import persistDirectory_child, persistDirectory_parent
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -6,9 +5,6 @@ from langchain.retrievers import ParentDocumentRetriever
 from langchain.storage import LocalFileStore
 import os
 from langchain.storage._lc_store import create_kv_docstore
-
-
-
     
 
 def get_docs(question):
@@ -20,8 +16,11 @@ When we query Chromadb using the question parameters it will first fetch all rel
 then fetch the parent docs using those chunks.
 """
 
+    persistDirectory_parent = os.getenv('persistDirectory_parent')
+    persistDirectory_child = os.getenv('persistDirectory_child')
     embedding_function = OpenAIEmbeddings()
     fs = LocalFileStore(persistDirectory_parent)
+    
 
     # Storage layer for parent documents
     store = create_kv_docstore(fs)

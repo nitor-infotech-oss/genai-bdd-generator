@@ -3,6 +3,7 @@ from msrest.authentication import BasicAuthentication
 from azure.devops.v7_1.work_item_tracking.models import Wiql
 from langchain.docstore.document import Document
 import re
+import os
 
 
 def remove_html_tags(text):
@@ -13,11 +14,11 @@ def remove_html_tags(text):
 
 def get_azure_work_items():
     """Access azure devops work items and get all work items based on Wiql query provided"""
-    personal_access_token = 'kwjl3qim5hwl2z22tdwf2kqrqop72wqtxeh4tb7mkpzqq73fmxtq'
-    organization_url = 'https://dev.azure.com/OutSystemsPractice'
+    personal_access_token = os.getenv('personal_access_token')
+    organization_url = os.getenv('organization_url')
 
     # Create a connection to the org
-    credentials = BasicAuthentication('pushpak.nemade@nitorinfotech.com', personal_access_token)
+    credentials = BasicAuthentication(os.getenv('email'), personal_access_token)
     connection = Connection(base_url=organization_url, creds=credentials)
 
     # Get a client (the "core" client provides access to projects, teams, etc)
@@ -36,7 +37,7 @@ def get_azure_work_items():
                 and [System.TeamProject] = 'BIRA91 - Dooze App'
                 order by [System.ChangedDate] desc""")
     
-    wiql_results = work_client.query_by_wiql(wiql, top=30).work_items
+    wiql_results = work_client.query_by_wiql(wiql, top=60).work_items
 
     work_items_list =[]
 
