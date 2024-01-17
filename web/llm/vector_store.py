@@ -8,8 +8,6 @@ from llm.preprocessor import remove_duplicates_docs
 import streamlit as st
 import time
 import os
-# import sys
-# sys.path.append('data')
 from data.confluence_data import get_all_spaces_docs
 from data.azure_data import prepare_azure_docs
 
