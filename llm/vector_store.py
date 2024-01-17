@@ -1,13 +1,13 @@
 from config import persistDirectory_child, persistDirectory_parent
 from langchain.embeddings import OpenAIEmbeddings
-from get_confluence_data import get_all_spaces_docs
+from data.confluence_data import get_all_spaces_docs
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import ParentDocumentRetriever
 from langchain.storage import LocalFileStore
 from langchain.storage._lc_store import create_kv_docstore
-from get_azure_data import prepare_azure_docs
-from remove_dup import remove_duplicates_docs
+from data.azure_data import prepare_azure_docs
+from llm.preprocessor import remove_duplicates_docs
 import streamlit as st
 import time
 
