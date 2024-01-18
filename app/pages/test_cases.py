@@ -1,7 +1,9 @@
 import streamlit as st
 from llm.docs_retriever import get_docs
 import openai
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def get_response(prompt,model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
