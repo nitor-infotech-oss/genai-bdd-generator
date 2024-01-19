@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+
+load_dotenv()
 import streamlit as st
 from langchain.storage._lc_store import create_kv_docstore
 from langchain.storage import  LocalFileStore
@@ -5,12 +8,6 @@ import clipboard
 import os
 from llm.docs_retriever import get_docs
 from llm.vector_store import job_scheduler_refresh_database
-from dotenv import load_dotenv
-
-load_dotenv()
-
-st.set_page_config(page_title="Search Documents",
-                   initial_sidebar_state="collapsed")
 
 persistDirectory_parent = os.getenv('persistDirectory_parent')
 col1,col2,col3 = st.columns([3,2,2])

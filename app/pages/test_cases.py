@@ -1,9 +1,10 @@
-import streamlit as st
-from llm.docs_retriever import get_docs
-import openai
 from dotenv import load_dotenv
 
 load_dotenv()
+import streamlit as st
+from llm.docs_retriever import get_docs
+import openai
+
 
 def get_response(prompt,model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
@@ -12,11 +13,6 @@ def get_response(prompt,model="gpt-3.5-turbo"):
                                             temperature=0)
     return response.choices[0].message["content"]
 
-
-st.set_page_config(page_title="Test Cases Generator",
-                   initial_sidebar_state="collapsed")
-
-  
 
 new_requirement_docs = st.text_area(label="new requirements",
                                     placeholder='type or paste new requirements here')
