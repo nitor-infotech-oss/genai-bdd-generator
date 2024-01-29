@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 load_dotenv()
 import streamlit as st
 from llm.docs_retriever import get_docs
-import openai
 import json
 import requests
 from openai import OpenAI

@@ -1,4 +1,4 @@
-from langchain.embeddings import OpenAIEmbeddings
+# from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import ParentDocumentRetriever
@@ -10,9 +10,6 @@ import time
 import os
 from data.confluence_data import get_all_spaces_docs
 from data.azure_data import prepare_azure_docs
-from chromadb.utils import embedding_functions
-from sentence_transformers import SentenceTransformer
-from langchain.embeddings import HuggingFaceBgeEmbeddings
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
