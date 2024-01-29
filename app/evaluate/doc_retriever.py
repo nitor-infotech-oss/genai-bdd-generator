@@ -1,4 +1,4 @@
-# from langchain.embeddings import OpenAIEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import ParentDocumentRetriever
@@ -18,13 +18,13 @@ These docs are divided into chunks and these chunks are embedded and stored into
 When we query Chromadb using the question parameters it will first fetch all relevant child chunks from DB and
 then fetch the parent docs using those chunks.
 """
-
-    persistDirectory_parent = os.getenv('persistDirectory_parent')
-    persistDirectory_child = os.getenv('persistDirectory_child')
+    persistDirectory_parent = '../parent'
+    persistDirectory_child = '../child'
     embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
     # embedding_function = OpenAIEmbeddings()
     fs = LocalFileStore(persistDirectory_parent)
     
+
     # Storage layer for parent documents
     store = create_kv_docstore(fs)
     parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
@@ -43,5 +43,3 @@ then fetch the parent docs using those chunks.
     
     relevant_docs = retriever.get_relevant_documents(question)
     return relevant_docs
-
-

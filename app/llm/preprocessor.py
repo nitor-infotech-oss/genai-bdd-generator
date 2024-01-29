@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer, util
 
 def remove_duplicates_docs(docs):
     # Load a pre-trained BERT model for sentence embeddings
-    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    model = SentenceTransformer('paraphrase-MiniLM-L6-v2') 
     # Extract document content and titles
     doc_contents = [doc.page_content for doc in docs]
     # Compute embeddings for document content

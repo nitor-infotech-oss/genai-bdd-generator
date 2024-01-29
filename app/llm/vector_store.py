@@ -10,6 +10,13 @@ import time
 import os
 from data.confluence_data import get_all_spaces_docs
 from data.azure_data import prepare_azure_docs
+from chromadb.utils import embedding_functions
+from sentence_transformers import SentenceTransformer
+from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.embeddings.sentence_transformer import (
+    SentenceTransformerEmbeddings,
+)
 
 
 def job_scheduler_refresh_database():
@@ -17,7 +24,8 @@ def job_scheduler_refresh_database():
     persistDirectory_child = os.getenv('persistDirectory_child')
 
     with st.spinner(text="Refreshing Database...") as s:
-        embedding_function = OpenAIEmbeddings()
+        # embedding_function = OpenAIEmbeddings()
+        embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         # Delete all parent documents from docstore
         fs = LocalFileStore(persistDirectory_parent)
         parent_docs_keys = []

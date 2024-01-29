@@ -30,7 +30,8 @@ def get_azure_work_items():
                        [System.Title],
                        [System.AreaPath],
                        [System.State],
-                       [System.Description]
+                       [System.Description],
+                       [System.Tags]
                 from WorkItems
                 where [System.WorkItemType] = 'User Story' 
                 and [System.AreaPath] = 'BIRA91 - Dooze App'
@@ -67,7 +68,12 @@ def prepare_azure_docs():
         if 'System.Description' in work_item.fields.keys():
             page_content = remove_html_tags(work_item.fields['System.Description'])
             doc = Document(page_content= page_content,
-                           metadata={'title': work_item.fields['System.Title'], "id":str(work_item.id)})
+                           metadata={'title': work_item.fields['System.Title'], 
+                                     "id":str(work_item.id),
+                                     "tag":work_item.fields["System.Tags"] if "System.Tags" in work_item.fields.keys()
+                                                            else ''
+                                     })
             azure_docs.append(doc)
     return azure_docs
+
     
