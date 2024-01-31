@@ -28,17 +28,19 @@ context_precision.llm = vllm
 
 answers = []
 contexts =[]
+prompts = []
 
 for query in questions:
     earlier_docs = get_docs(query)
     new_docs = query
     prompt = get_prompt(new_requirements=new_docs, earlier_requirements=earlier_docs)
+    prompts.append(prompt)
     answers.append(get_response(prompt=prompt))
     contexts.append([doc.page_content for doc in get_docs(query)])
 
 # # To dict
 data = {
-        "question": questions,
+        "question": prompts,
         "answer": answers,
         "contexts": contexts,
      }

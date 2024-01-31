@@ -17,5 +17,8 @@ Once user login to application with remember me checkbox as ticked. User login s
 1. The system must support only single-user authentication.
 2. Data storage should be in a flat file format.
 3. User interface should be text-based and command-line driven.
+""",
+"""
+Login
 """
 ]
