@@ -24,7 +24,7 @@ def get_azure_work_items():
     # Get a client (the "core" client provides access to projects, teams, etc)
     work_client = connection.clients.get_work_item_tracking_client()
 
-    wiql = Wiql(query="""
+    wiql = Wiql(query=f"""
                 select [System.Id],
                        [System.WorkItemType],
                        [System.Title],
@@ -34,8 +34,8 @@ def get_azure_work_items():
                        [System.Tags]
                 from WorkItems
                 where [System.WorkItemType] = 'User Story' 
-                and [System.AreaPath] = 'BIRA91 - Dooze App'
-                and [System.TeamProject] = 'BIRA91 - Dooze App'
+                and [System.AreaPath] = 'Dooze App'
+                and [System.TeamProject] = 'Dooze App'
                 order by [System.ChangedDate] desc""")
     
     wiql_results = work_client.query_by_wiql(wiql, top=60).work_items

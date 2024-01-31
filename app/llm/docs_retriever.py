@@ -38,10 +38,17 @@ then fetch the parent docs using those chunks.
                                         child_splitter=child_splitter,
                                         parent_splitter=parent_splitter,
                                         search_type="mmr",
-                                        search_kwargs={"k": 30},
-                                        lambda_mult = 1)
+                                        search_kwargs={"k": 30})
     
     relevant_docs = retriever.get_relevant_documents(question)
-    return relevant_docs
+    # relevant_docs = retriever.similarity_search_with_score(question, k=10 )
+    
 
+    return relevant_docs
+# BM25 
+# colab
+# Opensource Model : phi2, llam2, Mistral
+# kaggle
+# Loading 4 bit
+# RAG system
 

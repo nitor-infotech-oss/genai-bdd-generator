@@ -18,8 +18,8 @@ These docs are divided into chunks and these chunks are embedded and stored into
 When we query Chromadb using the question parameters it will first fetch all relevant child chunks from DB and
 then fetch the parent docs using those chunks.
 """
-    persistDirectory_parent = '../parent'
-    persistDirectory_child = '../child'
+    persistDirectory_parent = '../documents/parent'
+    persistDirectory_child = '../documents/child'
     embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
     # embedding_function = OpenAIEmbeddings()
     fs = LocalFileStore(persistDirectory_parent)
@@ -38,8 +38,7 @@ then fetch the parent docs using those chunks.
                                         child_splitter=child_splitter,
                                         parent_splitter=parent_splitter,
                                         search_type="mmr",
-                                        search_kwargs={"k": 30},
-                                        lambda_mult = 1)
+                                        search_kwargs={"k": 30} )
     
     relevant_docs = retriever.get_relevant_documents(question)
     return relevant_docs
