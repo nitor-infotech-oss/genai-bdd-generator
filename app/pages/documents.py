@@ -53,11 +53,11 @@ st.header("Documents: ")
 
 for i, doc in enumerate(relevant_docs):
     col1, col2 = st.columns([3.5, 1])
-    with col2:
-        st.button(label="copy",
-                  key=i,
-                  on_click=copyText,args=((doc),),
-                  help="copy text to clipboard!")
+    # with col2:
+    #     st.button(label="copy",
+    #               key=i,
+    #               on_click=copyText,args=((doc),),
+    #               help="copy text to clipboard!")
         
     with col1:
         st.markdown(str(i+1)+": "+doc.metadata['title'] + " ( id: "+doc.metadata['id']+" )")
