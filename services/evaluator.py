@@ -38,17 +38,13 @@ if contexts:
 
 dataset = Dataset.from_dict(data)
 
-
 result = evaluate(
     dataset = dataset, 
     metrics=[
         context_precision,
         faithfulness,
         answer_relevancy,
-        context_relevancy,
-        context_recall,
-        answer_similarity,
-        answer_correctness
+        context_relevancy
             ])
 
 print("Result is...")

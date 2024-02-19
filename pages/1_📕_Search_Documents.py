@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import pandas as pd
 import streamlit as st
 from langchain.storage._lc_store import create_kv_docstore
 from langchain.storage import  LocalFileStore
