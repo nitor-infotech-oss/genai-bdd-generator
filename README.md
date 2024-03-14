@@ -22,17 +22,29 @@ The AI Test Case Generator is an innovative application that uses artificial int
 
 ### Prerequisites
 
+- Python
 - Docker
+- Python Virtual Env (in case you do not wish to run via docker)
 
 ### Installation
 
-1. Clone the repository:
+   **Using Docker**
 
    ```bash
     git clone https://github.com/nitor-infotech-oss/ai-bdd-generator
     cd ai-bdd-generator
     docker-compose build
     docker-compose up
+   ```
+
+   **Using VENV**
+
+   ```bash
+    git clone https://github.com/nitor-infotech-oss/ai-bdd-generator
+    cd ai-bdd-generator
+    source .venv/bin/activate 
+    streamlit run 1_🏠_Home.py
+   ```
 
 
 

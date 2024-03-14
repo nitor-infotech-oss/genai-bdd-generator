@@ -18,19 +18,43 @@ with col3:
 
 query = st.text_input(label="Search Story", placeholder='Enter text to search documents & press "Enter"')
 print("Query is", query)
+show_sort = False
 if query:
     helper = DocumentHelper()
     relevant_docs = helper.get_relevant_docs(query)
+    show_sort = True
 else:
     persistDirectory_parent = os.getenv('persistDirectory_parent')
     fs = LocalFileStore(persistDirectory_parent)
     store = create_kv_docstore(fs)
     relevant_docs = store.mget(keys=list(fs.yield_keys()))
 
+options, sort_order_asc, sort_order_desc  = None, None, None
 if relevant_docs:
+    if show_sort:
+        col4,col5,col6 = st.columns([5,3,2])
+        with col4:
+            options = st.multiselect(
+                'Sort By',
+                ['Title', 'Relevance'],
+                ['Relevance',], max_selections=1)
+        with col6:
+            if options:
+                sort_order_desc = st.button(':small_red_triangle:')
+                sort_order_asc = st.button(':small_red_triangle_down:')
+    
+    st.caption("No of Documents: %d" % len(relevant_docs))
+    print(options, sort_order_asc, sort_order_desc)
+    if options:
+        if sort_order_asc or sort_order_desc:
+            relevant_docs = helper.get_sorted_documents(relevant_docs, options, sort_order_desc)
+        else:
+            relevant_docs = helper.get_sorted_documents(relevant_docs, options, True)
+
     with st.chat_message("assistant"):
         for i,doc in enumerate(relevant_docs):
-            is_expanded = True if i < 5 else False
+            is_expanded = True if i < 7 else False
             with st.expander(f":blue[**{doc.metadata['title'].strip().upper()}**]", expanded=is_expanded):
-                st.caption(f":gray[ID: {doc.metadata['id'].strip()}]")
+                st.caption(f":gray[ID: {doc.metadata['id'].strip()} Source: {doc.metadata['requirement_source'].title()}]")
+                st.caption(f":gray[Score: {doc.metadata['score']}]")
                 st.markdown(f"*{doc.page_content.strip()}*")

@@ -45,12 +45,14 @@ class DocumentHelper:
         for work_item in self.get_azure_data():
             if 'System.Description' in work_item.fields.keys():
                 page_content = self.remove_html_tags(work_item.fields['System.Description'])
-                doc = Document(page_content= page_content,
-                            metadata={'title': work_item.fields['System.Title'], 
-                                        "id":str(work_item.id),
-                                        "tag":work_item.fields["System.Tags"] if "System.Tags" in work_item.fields.keys()
-                                                                else ''
-                                        })
+                _metadata = {'title': work_item.fields['System.Title'], 
+                                "id":str(work_item.id),
+                                "tag":work_item.fields["System.Tags"] if "System.Tags" in work_item.fields.keys()
+                                                        else '',
+                                "requirement_source": "azure",
+                                "score": 0
+                        }
+                doc = Document(page_content= page_content, metadata=_metadata)
                 azure_docs.append(doc)
         return azure_docs
 
@@ -87,8 +89,10 @@ class DocumentHelper:
         docs =[
                 Document(page_content= doc.page_content,
                             metadata={
+                                    "requirement_source": "confluence",
                                     'title': doc.metadata['title'], 
-                                    'id':doc.metadata['id']
+                                    'id':doc.metadata['id'],
+                                    'score': 0
                                     } 
                     ) for doc in documents
         ]
@@ -106,44 +110,71 @@ class DocumentHelper:
         """
         persistDirectory_parent = os.getenv('persistDirectory_parent')
         persistDirectory_child = os.getenv('persistDirectory_child')
+        name_of_collection = os.getenv('COLLECTION_NAME')
         embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+
         fs = LocalFileStore(persistDirectory_parent)
         store = create_kv_docstore(fs)
         parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         child_splitter = RecursiveCharacterTextSplitter(chunk_size=400,chunk_overlap=20)
-        vectorstore = Chroma(collection_name="split_parents", 
-                            embedding_function=embedding_function, 
-                            persist_directory=persistDirectory_child)
+        vectorstore = Chroma(collection_name=name_of_collection, collection_metadata={"hnsw:space": "cosine"},
+                            embedding_function=embedding_function, persist_directory=persistDirectory_child)
         retriever = ParentDocumentRetriever(vectorstore=vectorstore,
                                             docstore=store,
                                             child_splitter=child_splitter,
                                             parent_splitter=parent_splitter,
-                                            search_type="mmr",
-                                            search_kwargs={"k": 30} )
-        relevant_docs = retriever.get_relevant_documents(question)
-        return relevant_docs
+                                            search_type="mmr", search_kwargs={'k':30, 'fetch_k':10}, #k 30
+                                            lambda_mult = 0.2)
 
+        # Get relevance score
+        relevance_score_chunks = retriever.vectorstore.similarity_search_with_relevance_scores(question, k=30)
+        temp = { e[0].metadata["title"]: e[1] for e in relevance_score_chunks }
+        print("relevance_score_chunks:", temp)
+        relevance_threshold = round(sum(temp.values())/len(temp),2)
+        print('relevance_threshold',relevance_threshold)
+        relevance_score_card = { int(e[0].metadata["id"]): {**e[0].metadata, 'score': e[1]} 
+                                    for e in relevance_score_chunks if e[1] > relevance_threshold
+                            }
+        print("relevance_score_card:",relevance_score_card)
+        relevant_docs = []
+        # if relevance_score_card:
+        _docs = retriever.get_relevant_documents(question)
+        for doc in _docs:
+            _id = int(doc.metadata['id'])
+            if _id in relevance_score_card:
+                    doc.metadata['score'] = relevance_score_card[_id]['score']
+            relevant_docs.append(doc)
+            # if _id in relevance_score_card and relevance_score_card[_id]['score']<= relevance_threshold:
+            #     continue
+            # else:
+            #     if _id in relevance_score_card:
+            #         doc.metadata['score'] = relevance_score_card[_id]['score']
+            #     relevant_docs.append(doc)
+
+        return relevant_docs
+    
+    def get_sorted_documents(self, docs, sort_by, sort_desc):
+        key_mapping = {"Relevance": "score", "Title": "title"}
+        sort_by = sort_by[0]
+        sorted_list = sorted(docs, key=lambda d: d.metadata.get(key_mapping.get(sort_by), 0), reverse=sort_desc)
+        return sorted_list
 
     def remove_duplicates_docs(self, docs):
         # Load a pre-trained BERT model for sentence embeddings
         model = SentenceTransformer('paraphrase-MiniLM-L6-v2') 
-        # Extract document content and titles
-        doc_contents = [doc.page_content for doc in docs]
         # Compute embeddings for document content
-        doc_embeddings = model.encode(doc_contents)
+        doc_embeddings = model.encode([doc.page_content for doc in docs])
         # Calculate cosine similarity matrix
         similarity_matrix = util.pytorch_cos_sim(doc_embeddings, doc_embeddings)
-        # Identify redundant documents
-        redundant_indices = []
-
+        # Identify redundant documents ######  check if sentence_transformers.util.semantic_search can be used
+        redundant_indices = set()
         for i in range(len(docs)):
             for j in range(i + 1, len(docs)):
-                if similarity_matrix[i, j] > SIMILARITY_THRESHOLD:
-                    redundant_indices.append(j)
+                if j not in redundant_indices and similarity_matrix[i, j] > SIMILARITY_THRESHOLD:
+                    redundant_indices.add(j)
         
         # Remove redundant documents
-        filtered_docs = [doc for i, doc in enumerate(docs) if i not in redundant_indices]
-        return filtered_docs
+        return [doc for i, doc in enumerate(docs) if i not in redundant_indices]
 
 
 

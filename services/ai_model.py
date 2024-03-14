@@ -9,6 +9,22 @@ from openai import OpenAI
 import google.generativeai as genai
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+# def generate_full_form_prompt(text):
+#     # Construct a prompt asking the user for full forms
+#     prompt = f"Given the text:\n{text}\n\nPlease provide the full forms for any abbreviations or short forms mentioned above:"
+#     client = OpenAI()
+#     # Call OpenAI API with the generated prompt
+#     response = client.chat.completions.create(
+#         engine="text-davinci-003",
+#         prompt=prompt,
+#         temperature=0.7,
+#         max_tokens=100
+#     )
+
+#     # Extract the generated message
+#     user_message = response['choices'][0]['text'].strip()
+
+#     return user_message
 
 def get_llm_response(prompt, delay=False):
     client = OpenAI()
@@ -18,6 +34,19 @@ def get_llm_response(prompt, delay=False):
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
+    print(response)
+    return response.choices[0].message.content.strip()
+
+def get_llm_response_with_temperature(prompt):
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo", # gpt-4-0125-preview
+        temperature=0,
+        messages=[
+            {"role": "user", "content": prompt}    
+        ]
+    )
+    print(response)
     return response.choices[0].message.content.strip()
 
 def get_gemai_response(prompt):
