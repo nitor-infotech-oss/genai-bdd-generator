@@ -3,13 +3,20 @@ version: '3.8'
 services:
   web:
     build: .
+    env_file:
+      - .env
+    volumes:
+      - documents_parent:/app/documents/parent
+      - documents_child:/app/documents/child
     ports:
       - 8501:8501
-    volumes:
-      - app_data:/app/data
-    environment:
-      - PYTHONUNBUFFERED=1
+    # environment: 
+      # - PYTHONUNBUFFERED=1
 
 volumes:
-  app_data:
-    driver: local
+  documents_parent:
+  documents_child:
+
+# volumes:
+#   documents:
+#     driver: local

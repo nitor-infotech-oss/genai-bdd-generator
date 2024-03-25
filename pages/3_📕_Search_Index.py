@@ -21,11 +21,10 @@ print("Query is", query)
 show_sort = False
 if query:
     helper = DocumentHelper()
-    relevant_docs = helper.get_relevant_docs(query)
+    relevant_docs = helper.get_relevant_index_docs(query)
     show_sort = True
 else:
-    PERSIST_PARENTDIR = os.getenv('PERSIST_PARENTDIR')
-    fs = LocalFileStore(PERSIST_PARENTDIR)
+    fs = LocalFileStore("documents/new")
     store = create_kv_docstore(fs)
     relevant_docs = store.mget(keys=list(fs.yield_keys()))
 
@@ -56,5 +55,5 @@ if relevant_docs:
             is_expanded = True if i < 7 else False
             with st.expander(f":blue[**{doc.metadata['title'].strip().upper()}**]", expanded=is_expanded):
                 st.caption(f":gray[ID: {doc.metadata['id'].strip()} Source: {doc.metadata['requirement_source'].title()}]")
-                st.caption(f":gray[Score: {doc.metadata['score']}]")
-                st.markdown(f"*{doc.page_content.strip()}*")
+                st.caption(f":gray[Score: {doc.score}]")
+                st.markdown(f"*{doc.get_text().strip()}*")
